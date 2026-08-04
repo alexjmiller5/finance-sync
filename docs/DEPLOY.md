@@ -51,12 +51,11 @@ sudo darwin-rebuild switch --flake .#mac-mini
 ```
 
 This builds the app into the store, wraps it in **`/Applications/NotionFinanceSync.app`**
-(signed with the stable cert from step 5), generates `config.toml`, installs the
-**google-chrome** cask + the **`op`** CLI, and creates the
+(signed with a stable self-signed cert the activation creates on first run —
+idempotent, so the FDA grant to the `.app` survives every rebuild), generates
+`config.toml`, installs the **google-chrome** cask + the **`op`** CLI, and creates the
 `com.notion-finance-sync.daily` launchd **user** agent (fires 03:30 daily, runs the
 `.app`). State (Chrome profiles, snapshots, logs) lives in `~/Library/Application Support/notion-finance-sync/`.
-(Order note: run `scripts/make-signing-cert.sh` from step 5 before the *first*
-rebuild, so the `.app` gets the stable signature and your FDA grant sticks.)
 
 The agent doesn't sync yet — the manual bits below come first.
 
