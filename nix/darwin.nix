@@ -34,14 +34,18 @@ let
     mkdir -p "$NFS_STATE_DIR"
 
     token=""
+    token_ref=${lib.escapeShellArg (toString (cfg.tokenOpRef or ""))}
+    token_auth_file=${lib.escapeShellArg (toString (cfg.tokenOpAuthFile or ""))}
     token_file=${lib.escapeShellArg (toString (cfg.tokenFile or ""))}
-    if [ -n "$token_file" ] && [ -r "$token_file" ]; then
+    if [ -n "$token_ref" ] && [ -r "$token_auth_file" ]; then
+      token="$(OP_SERVICE_ACCOUNT_TOKEN="$(cat "$token_auth_file")" op read "$token_ref")"
+    elif [ -n "$token_file" ] && [ -r "$token_file" ]; then
       token="$(cat "$token_file")"
     else
       token="$(/usr/bin/security find-generic-password -a ${lib.escapeShellArg cfg.user} -s ${lib.escapeShellArg cfg.keychainService} -w 2>/dev/null || true)"
     fi
     if [ -z "$token" ]; then
-      echo "ERROR: no 1Password token (agenix file '$token_file' unreadable and Keychain item '${cfg.keychainService}' missing)." >&2
+      echo "ERROR: no 1Password token (op ref '$token_ref' unset/auth-file unreadable, agenix file '$token_file' unreadable, Keychain item '${cfg.keychainService}' missing)." >&2
       exit 1
     fi
     export OP_SERVICE_ACCOUNT_TOKEN="$token"
@@ -112,6 +116,29 @@ in
         Path to a file containing the 1Password service-account token (e.g. an
         agenix-decrypted secret: `config.age.secrets.op-token.path`). Preferred over
         the Keychain. If null/unreadable, the runner falls back to the Keychain item.
+      '';
+    };
+
+    tokenOpRef = lib.mkOption {
+      type = lib.types.nullOr lib.types.str;
+      default = null;
+      example = "op://<vault-id>/<item-id>/password";
+      description = ''
+        1Password secret reference to the finance service-account token, resolved
+        at RUN time with `op read`, authenticated by tokenOpAuthFile (the
+        machine-vault pattern: agenix holds only a per-machine SA token; the
+        finance token lives in the machine's 1P vault). Use vault/item IDs, not
+        names. Takes precedence over tokenFile and the Keychain.
+      '';
+    };
+
+    tokenOpAuthFile = lib.mkOption {
+      type = lib.types.nullOr lib.types.str;
+      default = null;
+      description = ''
+        Path to a file containing the (machine) service-account token that
+        authenticates the tokenOpRef read — e.g. an agenix-decrypted
+        `config.age.secrets.machine-sa.path`. Required for tokenOpRef to apply.
       '';
     };
 
