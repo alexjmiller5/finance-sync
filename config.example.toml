@@ -63,11 +63,11 @@ service_account_token_ref = "op://Personal/<Service Account Token item>/password
 # (username + password fields). Add/remove entries to match the banks you run.
 # Use the item *id* when the title contains characters illegal in op:// refs (e.g. '*').
 [onepassword.bank_items]
-bofa = "BofA"
-bofa_investments = "BofA"        # shares the BofA login
+bofa = "Bank of America"
+bofa_investments = "Bank of America"  # shares the Bank of America login
 wells_fargo = "Wells Fargo"
 us_bank = "U.S. Bank"
-everbank = "Everbank"
+everbank = "EverBank"
 venmo = "Venmo"
 etrade = "REPLACE_WITH_ITEM_ID"  # title "E*Trade" has a '*', so reference by id
 fidelity = "Fidelity"

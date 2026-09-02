@@ -150,7 +150,7 @@ def _resolve(env_var: str, op_reference: str) -> str:
 def get_notion_api_key() -> str:
     return _resolve(
         "NOTION_API_KEY",
-        f"op://{OP_VAULT}/Notion Finance Sync Notion Internal Integration Secret/credential",
+        f"op://{OP_VAULT}/7fqihmxb7vnaptdr7ka4n4amne/credential",  # Notion Finance Sync Notion Internal Integration Secret
     )
 
 
@@ -162,7 +162,7 @@ def get_gmail_app_password() -> str:
     via Google account security settings and grant IMAP/POP/SMTP access while
     bypassing 2FA.
     """
-    return _resolve("GMAIL_APP_PASSWORD", f"op://{OP_VAULT}/Gmail App Password/credential")
+    return _resolve("GMAIL_APP_PASSWORD", f"op://{OP_VAULT}/drxk4zee2grqcuflka3vfj4rrm/credential")  # Notion Finance Sync Gmail App Password
 
 
 @cache

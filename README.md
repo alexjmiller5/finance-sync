@@ -94,7 +94,7 @@ get prompted.
 CLI shortcut for one (repeat per bank, replacing placeholders):
 ```bash
 op item create --category=login --vault="Notion Finance Sync" \
-  --title="BofA" --url="https://www.bankofamerica.com/" \
+  --title="Bank of America" --url="https://www.bankofamerica.com/" \
   username="YOUR_USERNAME" password="YOUR_PASSWORD"
 ```
 
@@ -113,9 +113,9 @@ The email 2FA reader uses Gmail's IMAP gateway with an App Password (not OAuth).
 1. Enable 2FA on your Google account.
 2. Go to **Account → Security → App Passwords**.
 3. Create a new app password named `notion-finance-sync`.
-4. Store the 16-character output in 1Password as a Password or API Credential item titled `Gmail App Password` with a `credential` field.
+4. Store the 16-character output in 1Password as a Password or API Credential item titled `Notion Finance Sync Gmail App Password` with a `credential` field.
 
-Reference path: `op://<vault>/Gmail App Password/credential`
+Reference path: `op://<vault>/Notion Finance Sync Gmail App Password/credential`
 
 The Gmail address itself is **required** via the `GMAIL_ADDRESS` env var (set it in your gitignored `.env`, or the deploy environment). It has no hardcoded default, to keep the personal email out of source control.
 
@@ -193,7 +193,7 @@ services.notion-finance-sync = {
     onepassword = {
       vault = "<vault-id>";
       service_account_token_ref = "op://Personal/<token item>/password";
-      bank_items = { bofa = "BofA"; /* … */ };
+      bank_items = { bofa = "Bank of America"; /* … */ };
     };
   };
 };
