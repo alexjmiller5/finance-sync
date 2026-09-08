@@ -13,8 +13,8 @@ from pathlib import Path
 
 import pytest
 
-from notion_finance_sync.banks.etrade import activity
-from notion_finance_sync.models import (
+from finance_sync.banks.etrade import activity
+from finance_sync.models import (
     AccountType,
     BankName,
     CanonicalCategory,

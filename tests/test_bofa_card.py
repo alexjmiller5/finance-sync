@@ -7,8 +7,8 @@ from pathlib import Path
 
 import pytest
 
-from notion_finance_sync.banks.bofa import card
-from notion_finance_sync.models import AccountType, BankName, CanonicalCategory, TransactionStatus
+from finance_sync.banks.bofa import card
+from finance_sync.models import AccountType, BankName, CanonicalCategory, TransactionStatus
 
 FX = Path(__file__).parent / "fixtures" / "bofa"
 

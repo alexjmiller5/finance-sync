@@ -17,8 +17,8 @@ import time
 from datetime import UTC, datetime
 from pathlib import Path
 
-from notion_finance_sync.browser.factory import open_session
-from notion_finance_sync.config.settings import get_bank_password, get_bank_username
+from finance_sync.browser.factory import open_session
+from finance_sync.config.settings import get_bank_password, get_bank_username
 
 SNAPSHOT_ROOT = Path(__file__).resolve().parents[1] / "data" / "snapshots" / "fidelity"
 LOGIN_URL = "https://digital.fidelity.com/prgw/digital/login/full-page"
@@ -149,7 +149,7 @@ def main() -> None:
                 _capture(sb, out_dir, "twofa_options_failure")
 
         if phase == "sms-login":
-            from notion_finance_sync.twofa.sms import get_sms_code
+            from finance_sync.twofa.sms import get_sms_code
 
             sb.cdp.wait_for_element_visible("#dom-try-another-way-link", timeout=20)
             sb.cdp.click("#dom-try-another-way-link")

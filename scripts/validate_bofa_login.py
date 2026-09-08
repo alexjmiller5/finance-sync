@@ -23,7 +23,7 @@ import sys
 
 import structlog
 
-from notion_finance_sync.banks.bofa import card, deposit, fetchers, scraper, session
+from finance_sync.banks.bofa import card, deposit, fetchers, scraper, session
 
 log = structlog.get_logger()
 

@@ -9,7 +9,7 @@ from unittest.mock import patch
 
 import pytest
 
-from notion_finance_sync.health import tracker
+from finance_sync.health import tracker
 
 
 @pytest.fixture(autouse=True)
@@ -131,7 +131,7 @@ class TestGetAll:
 class TestTimezoneConsistency:
     def test_failure_day_uses_local_date(self):
         known_date = date(2026, 6, 1)
-        with patch("notion_finance_sync.health.tracker.date") as mock_date:
+        with patch("finance_sync.health.tracker.date") as mock_date:
             mock_date.today.return_value = known_date
             tracker.record_failure("bofa", "err")
 
@@ -140,16 +140,16 @@ class TestTimezoneConsistency:
 
     def test_needs_escalation_uses_local_date_for_comparison(self):
         known_date = date(2026, 6, 1)
-        with patch("notion_finance_sync.health.tracker.date") as mock_date:
+        with patch("finance_sync.health.tracker.date") as mock_date:
             mock_date.today.return_value = known_date
             for _ in range(tracker.FAILURE_THRESHOLD):
                 tracker.record_failure("bofa", "err")
 
-        with patch("notion_finance_sync.health.tracker.date") as mock_date:
+        with patch("finance_sync.health.tracker.date") as mock_date:
             mock_date.today.return_value = known_date
             assert tracker.needs_escalation("bofa") is True
 
         # A different "today" should not escalate
-        with patch("notion_finance_sync.health.tracker.date") as mock_date:
+        with patch("finance_sync.health.tracker.date") as mock_date:
             mock_date.today.return_value = date(2026, 6, 2)
             assert tracker.needs_escalation("bofa") is False

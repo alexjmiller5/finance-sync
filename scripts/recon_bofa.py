@@ -29,7 +29,7 @@ from __future__ import annotations
 from datetime import datetime
 from pathlib import Path
 
-from notion_finance_sync.browser.factory import open_session
+from finance_sync.browser.factory import open_session
 
 SNAPSHOT_ROOT = Path(__file__).resolve().parents[1] / "data" / "snapshots" / "bofa"
 START_URL = "https://www.bankofamerica.com/"

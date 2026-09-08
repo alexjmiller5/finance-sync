@@ -6,7 +6,7 @@ populated envelope to prove the notification trigger fires when count > 0.
 
 from __future__ import annotations
 
-from notion_finance_sync.banks.wells_fargo import activity
+from finance_sync.banks.wells_fargo import activity
 
 # Real response captured live 2026-07-03 (Autograph …8000, full-history search, empty).
 REAL_EMPTY = (

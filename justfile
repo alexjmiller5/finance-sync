@@ -44,7 +44,7 @@ demo:
 
 # Start the FastAPI HTTP server (foreground)
 serve:
-    uv run uvicorn notion_finance_sync.server.app:app --host 127.0.0.1 --port 8765
+    uv run uvicorn finance_sync.server.app:app --host 127.0.0.1 --port 8765
 
 # Store the 1Password service-account token in the macOS Keychain (Mac Mini deploy)
 store-op-token:
@@ -52,13 +52,13 @@ store-op-token:
 
 # Install the launchd daily-sync job
 install-launchd:
-    cp deploy/com.alexmiller.notion-finance-sync.plist ~/Library/LaunchAgents/
-    launchctl load ~/Library/LaunchAgents/com.alexmiller.notion-finance-sync.plist
+    cp deploy/com.alexmiller.finance-sync.plist ~/Library/LaunchAgents/
+    launchctl load ~/Library/LaunchAgents/com.alexmiller.finance-sync.plist
 
 # Uninstall the launchd job
 uninstall-launchd:
-    launchctl unload ~/Library/LaunchAgents/com.alexmiller.notion-finance-sync.plist
-    rm ~/Library/LaunchAgents/com.alexmiller.notion-finance-sync.plist
+    launchctl unload ~/Library/LaunchAgents/com.alexmiller.finance-sync.plist
+    rm ~/Library/LaunchAgents/com.alexmiller.finance-sync.plist
 
 # Run tests
 test:

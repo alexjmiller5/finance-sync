@@ -7,8 +7,8 @@ from pathlib import Path
 
 import pytest
 
-from notion_finance_sync.banks.bofa.investments import parse_activity, parse_holdings
-from notion_finance_sync.models import AccountType, BankName, CanonicalCategory
+from finance_sync.banks.bofa.investments import parse_activity, parse_holdings
+from finance_sync.models import AccountType, BankName, CanonicalCategory
 
 FIXTURE = Path(__file__).parent / "fixtures" / "bofa" / "ira_holdings.html"
 ACTIVITY_FIXTURE = Path(__file__).parent / "fixtures" / "bofa" / "ira_activity.html"
@@ -85,8 +85,8 @@ def test_activity_source_id_stable(activity_html):
 
 
 def test_account_for_switcher_text():
-    from notion_finance_sync.banks.bofa_investments import _account_for
-    from notion_finance_sync.models import AccountType
+    from finance_sync.banks.bofa_investments import _account_for
+    from finance_sync.models import AccountType
 
     ira = _account_for("Go To Account IRA ALEXANDER MILLER (ROTH) 0217337")
     assert ira is not None

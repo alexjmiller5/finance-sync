@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from datetime import date
 
-from notion_finance_sync.models import (
+from finance_sync.models import (
     AccountType,
     BankName,
     CanonicalCategory,

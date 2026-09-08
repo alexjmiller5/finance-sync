@@ -12,8 +12,8 @@
 #
 set -euo pipefail
 
-PROJECT_DIR="${PROJECT_DIR:-/Users/alexmiller/desktop/coding/active-projects/notion-finance-sync}"
-KEYCHAIN_SERVICE="${OP_TOKEN_KEYCHAIN_SERVICE:-notion-finance-sync-op-token}"
+PROJECT_DIR="${PROJECT_DIR:-/Users/alexmiller/desktop/coding/active-projects/finance-sync}"
+KEYCHAIN_SERVICE="${OP_TOKEN_KEYCHAIN_SERVICE:-finance-sync-op-token}"
 KC_USER="$(id -un)"
 UV_BIN="${UV_BIN:-$HOME/.local/bin/uv}"
 [[ -x "$UV_BIN" ]] || UV_BIN="$(command -v uv)"

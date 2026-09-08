@@ -1,4 +1,4 @@
-# notion-finance-sync
+# finance-sync
 
 Personal direct-bank-scraper service writing transactions and investment events to Notion. Runs on a Mac Mini, syncs daily and on-demand.
 
@@ -40,7 +40,7 @@ and a **service account** scoped to that vault for unattended runs.
 Both were created during initial setup with:
 ```bash
 op vault create "Notion Finance Sync" --icon vault-door
-op service-account create "notion-finance-sync-svc" \
+op service-account create "finance-sync-svc" \
   --vault "Notion Finance Sync:read_items,write_items"
 ```
 
@@ -67,7 +67,7 @@ session), the login Keychain must be unlocked — fine on an auto-login Mac Mini
 
 **Local development / manual runs.** No token needed — either run in `manual`
 auth mode (the scraper prompts for credentials), or use your normal `op signin`
-session and `export OP_SERVICE_ACCOUNT_TOKEN=$(security find-generic-password -a "$USER" -s notion-finance-sync-op-token -w)`.
+session and `export OP_SERVICE_ACCOUNT_TOKEN=$(security find-generic-password -a "$USER" -s finance-sync-op-token -w)`.
 
 ### 4. Populate per-bank credentials in the project 1Password vault
 
@@ -112,7 +112,7 @@ The email 2FA reader uses Gmail's IMAP gateway with an App Password (not OAuth).
 
 1. Enable 2FA on your Google account.
 2. Go to **Account → Security → App Passwords**.
-3. Create a new app password named `notion-finance-sync`.
+3. Create a new app password named `finance-sync`.
 4. Store the 16-character output in 1Password as a Password or API Credential item titled `Notion Finance Sync Gmail App Password` with a `credential` field.
 
 Reference path: `op://<vault>/Notion Finance Sync Gmail App Password/credential`
@@ -168,8 +168,8 @@ installs Chrome + `op`, and schedules a launchd agent — **no repo checkout, no
 **1. Add the flake input:**
 
 ```nix
-inputs.notion-finance-sync.url = "github:alexjmiller5/notion-finance-sync";
-inputs.notion-finance-sync.inputs.nixpkgs.follows = "nixpkgs";
+inputs.finance-sync.url = "github:alexjmiller5/finance-sync";
+inputs.finance-sync.inputs.nixpkgs.follows = "nixpkgs";
 ```
 
 **2. Import the module + enable it** (import at the flake-modules level so `inputs`
@@ -177,8 +177,8 @@ is in scope; the `settings` block is the non-secret `config.toml` as an attrset 
 see [`config.example.toml`](config.example.toml)):
 
 ```nix
-# in your darwinSystem modules list:  inputs.notion-finance-sync.darwinModules.default
-services.notion-finance-sync = {
+# in your darwinSystem modules list:  inputs.finance-sync.darwinModules.default
+services.finance-sync = {
   enable = true;
   user = "alexmiller";
   hour = 3; minute = 30;          # optional (default 03:30)
@@ -200,14 +200,14 @@ services.notion-finance-sync = {
 ```
 
 `darwin-rebuild switch` then builds everything, wraps the app in a signed
-`/Applications/NotionFinanceSync.app`, and creates the `com.notion-finance-sync.daily`
+`/Applications/NotionFinanceSync.app`, and creates the `com.alexmiller.finance-sync.daily`
 launchd user agent (which runs the `.app`). State (Chrome profiles, snapshots, logs)
-lives in `~/Library/Application Support/notion-finance-sync/`.
+lives in `~/Library/Application Support/finance-sync/`.
 
 The **OP service-account token** is provided via [agenix](https://github.com/ryantm/agenix):
 age-encrypted in your `nix-config` (recipients = the Mini host key + your laptop key),
 decrypted at activation to `/run/agenix/op-token`, which the sync reads (Keychain
-fallback retained). Set `services.notion-finance-sync.tokenFile = config.age.secrets.op-token.path;`.
+fallback retained). Set `services.finance-sync.tokenFile = config.age.secrets.op-token.path;`.
 
 **3. One-time manual steps Nix can't do** (TCC/SIP-protected, secret, or
 interactive): iPhone → Text Message Forwarding to the Mini; encrypt the OP token

@@ -4,14 +4,14 @@ from __future__ import annotations
 
 from datetime import date
 
-from notion_finance_sync.models import (
+from finance_sync.models import (
     AccountType,
     BankName,
     CardNetwork,
     TransactionRecord,
     TransactionStatus,
 )
-from notion_finance_sync.sync.diffing import build_transaction_changes
+from finance_sync.sync.diffing import build_transaction_changes
 
 
 def _record(

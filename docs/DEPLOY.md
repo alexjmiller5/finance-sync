@@ -17,17 +17,17 @@ or interactive). Everything else is one `darwin-rebuild`.
 - [Determinate Nix](https://determinate.systems/nix) (the config sets
   `nix.enable = false` — Determinate manages the daemon).
 - `nix-config` reachable (your nix-darwin flake, with `nix-homebrew`). The
-  `notion-finance-sync` flake input is a **public** repo, so no GitHub token.
+  `finance-sync` flake input is a **public** repo, so no GitHub token.
 
 ## 1. Configure it in `nix-config`
 
-The module (`services.notion-finance-sync`) is already wired into `hosts/mac-mini.nix`:
+The module (`services.finance-sync`) is already wired into `hosts/mac-mini.nix`:
 enable it, set `user`, and provide `settings` — the non-secret `config.toml` as a
 nix attrset (Notion IDs, the property-ID map, 1Password vault ID, bank→item map,
 Gmail, Bilt phone). Secrets are NOT here — they stay in 1Password.
 
 ```nix
-services.notion-finance-sync = {
+services.finance-sync = {
   enable = true;
   user = "alexmiller";
   settings = {
@@ -54,8 +54,8 @@ This builds the app into the store, wraps it in **`/Applications/NotionFinanceSy
 (signed with a stable self-signed cert the activation creates on first run —
 idempotent, so the FDA grant to the `.app` survives every rebuild), generates
 `config.toml`, installs the **google-chrome** cask + the **`op`** CLI, and creates the
-`com.notion-finance-sync.daily` launchd **user** agent (fires 03:30 daily, runs the
-`.app`). State (Chrome profiles, snapshots, logs) lives in `~/Library/Application Support/notion-finance-sync/`.
+`com.alexmiller.finance-sync.daily` launchd **user** agent (fires 03:30 daily, runs the
+`.app`). State (Chrome profiles, snapshots, logs) lives in `~/Library/Application Support/finance-sync/`.
 
 The agent doesn't sync yet — the manual bits below come first.
 
@@ -79,8 +79,8 @@ cd .. && git add secrets/op-token.age && git commit -m "OP token" && git push
 ```
 
 (The runner reads that file and exports `OP_SERVICE_ACCOUNT_TOKEN`. Fallback: if the
-file is unreadable it uses a Keychain item `notion-finance-sync-op-token`, stored via
-`security add-generic-password -a "$USER" -s notion-finance-sync-op-token -U -A -w`.)
+file is unreadable it uses a Keychain item `finance-sync-op-token`, stored via
+`security add-generic-password -a "$USER" -s finance-sync-op-token -U -A -w`.)
 
 ## 5. **[manual]** Full Disk Access (once)
 
@@ -105,9 +105,9 @@ watching the 2FA:
 
 ```bash
 BIN=$(readlink -f /run/current-system/sw/bin 2>/dev/null); # or find the env in the store
-export NFS_STATE_DIR="$HOME/Library/Application Support/notion-finance-sync"
-export OP_SERVICE_ACCOUNT_TOKEN=$(security find-generic-password -a "$USER" -s notion-finance-sync-op-token -w)
-notion-finance-sync --bank bofa --interactive     # if the binary is on PATH; else use the store path
+export NFS_STATE_DIR="$HOME/Library/Application Support/finance-sync"
+export OP_SERVICE_ACCOUNT_TOKEN=$(security find-generic-password -a "$USER" -s finance-sync-op-token -w)
+finance-sync --bank bofa --interactive     # if the binary is on PATH; else use the store path
 # …then wells_fargo, us_bank, everbank, venmo, etrade, fidelity, bofa_investments, bilt
 ```
 
@@ -121,14 +121,14 @@ Once every bank bootstraps clean, the launchd agent runs the full sync daily at
 03:30. Nothing above repeats **unless a bank's device-trust expires** — then re-do
 step 6 for that one bank.
 
-- Logs: `~/Library/Application Support/notion-finance-sync/launchd.{log,err.log}`.
+- Logs: `~/Library/Application Support/finance-sync/launchd.{log,err.log}`.
 - Health: banks failing 3× in a day auto-create a Notion task (SPEC §3).
 
 ## What repeats, what doesn't
 
 | Trigger | Redo |
 |---|---|
-| New app version | bump the flake input (`nix flake update notion-finance-sync` in nix-config) + `darwin-rebuild switch` |
+| New app version | bump the flake input (`nix flake update finance-sync` in nix-config) + `darwin-rebuild switch` |
 | Config change (IDs, banks) | edit `settings` in `hosts/mac-mini.nix` + `darwin-rebuild switch` |
 | A bank's device-trust expired | step 6 for that bank only |
 | Recreated the Notion DB | regenerate `property_ids` (step 1) + `just migrate` |

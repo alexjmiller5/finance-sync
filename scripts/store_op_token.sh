@@ -14,7 +14,7 @@
 #
 set -euo pipefail
 
-KEYCHAIN_SERVICE="${OP_TOKEN_KEYCHAIN_SERVICE:-notion-finance-sync-op-token}"
+KEYCHAIN_SERVICE="${OP_TOKEN_KEYCHAIN_SERVICE:-finance-sync-op-token}"
 KC_USER="$(id -un)"
 
 echo "Storing 1Password service-account token in the login Keychain."
@@ -24,7 +24,7 @@ echo "Paste the token when prompted (input hidden; it will ask twice)."
 
 security add-generic-password -U -A \
   -a "$KC_USER" -s "$KEYCHAIN_SERVICE" \
-  -l "notion-finance-sync OP service-account token" \
+  -l "finance-sync OP service-account token" \
   -w
 
 echo

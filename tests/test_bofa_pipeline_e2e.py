@@ -13,9 +13,9 @@ from pathlib import Path
 
 import pytest
 
-from notion_finance_sync.banks.bofa import assemble, card, deposit, rewards
-from notion_finance_sync.notion.encoders import encode_transaction
-from notion_finance_sync.notion.properties import P
+from finance_sync.banks.bofa import assemble, card, deposit, rewards
+from finance_sync.notion.encoders import encode_transaction
+from finance_sync.notion.properties import P
 
 FX = Path(__file__).parent / "fixtures" / "bofa"
 

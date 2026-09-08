@@ -18,7 +18,7 @@ from datetime import date
 import httpx
 import pytest
 
-from notion_finance_sync.models.transactions import (
+from finance_sync.models.transactions import (
     AccountType,
     BankName,
     CanonicalCategory,
@@ -27,9 +27,9 @@ from notion_finance_sync.models.transactions import (
     TransactionRecord,
     TransactionStatus,
 )
-from notion_finance_sync.notion.client import NotionClient
-from notion_finance_sync.notion.encoders import encode_transaction
-from notion_finance_sync.notion.properties import P
+from finance_sync.notion.client import NotionClient
+from finance_sync.notion.encoders import encode_transaction
+from finance_sync.notion.properties import P
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -366,7 +366,7 @@ class TestReviewStatusEncoding:
         assert P.REVIEW_STATUS not in props
 
     def test_review_status_emitted_when_set(self):
-        from notion_finance_sync.models import ReviewStatus
+        from finance_sync.models import ReviewStatus
 
         record = make_sparse_record()
         record.review_status = ReviewStatus.NEEDS_REVIEW
@@ -374,7 +374,7 @@ class TestReviewStatusEncoding:
         assert props[P.REVIEW_STATUS] == {"status": {"name": "Needs Review"}}
 
     def test_review_status_reviewed_value(self):
-        from notion_finance_sync.models import ReviewStatus
+        from finance_sync.models import ReviewStatus
 
         record = make_sparse_record()
         record.review_status = ReviewStatus.REVIEWED

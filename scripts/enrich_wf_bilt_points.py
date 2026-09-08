@@ -28,14 +28,14 @@ from zoneinfo import ZoneInfo
 import httpx
 import structlog
 
-from notion_finance_sync.banks.wells_fargo.scraper import WellsFargoScraper
-from notion_finance_sync.config.settings import (
+from finance_sync.banks.wells_fargo.scraper import WellsFargoScraper
+from finance_sync.config.settings import (
     NOTION_API_VERSION,
     NOTION_TRANSACTIONS_DATA_SOURCE_ID,
     get_notion_api_key,
 )
-from notion_finance_sync.models import TransactionRecord
-from notion_finance_sync.notion.client import NotionClient
+from finance_sync.models import TransactionRecord
+from finance_sync.notion.client import NotionClient
 
 logger = structlog.get_logger()
 

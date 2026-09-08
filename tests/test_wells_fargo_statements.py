@@ -15,8 +15,8 @@ from pathlib import Path
 
 import pytest
 
-from notion_finance_sync.banks.wells_fargo import statements
-from notion_finance_sync.models import (
+from finance_sync.banks.wells_fargo import statements
+from finance_sync.models import (
     AccountType,
     BankName,
     CardNetwork,

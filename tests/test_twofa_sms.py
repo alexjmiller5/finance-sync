@@ -12,9 +12,9 @@ from pathlib import Path
 
 import pytest
 
-import notion_finance_sync.twofa.sms as sms_mod
-from notion_finance_sync.banks.bofa.session import BOFA_SMS_REGEX, BOFA_SMS_SENDER
-from notion_finance_sync.twofa.sms import (
+import finance_sync.twofa.sms as sms_mod
+from finance_sync.banks.bofa.session import BOFA_SMS_REGEX, BOFA_SMS_SENDER
+from finance_sync.twofa.sms import (
     _apple_ts,
     _decode_attributed_body,
     _query_recent_messages,

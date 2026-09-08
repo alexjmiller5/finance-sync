@@ -1,4 +1,4 @@
-"""Tests for the sync CLI (notion_finance_sync.cli.sync_cli).
+"""Tests for the sync CLI (finance_sync.cli.sync_cli).
 
 Covers:
 - --bank <id> calls run_one_bank with that session_id, exits 0 on success.
@@ -18,7 +18,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from notion_finance_sync.sync.orchestrator import SyncResult
+from finance_sync.sync.orchestrator import SyncResult
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -27,7 +27,7 @@ from notion_finance_sync.sync.orchestrator import SyncResult
 
 @pytest.fixture(autouse=True)
 def _isolate_health_file(monkeypatch, tmp_path: Path):
-    from notion_finance_sync.health import tracker
+    from finance_sync.health import tracker
 
     monkeypatch.setattr(tracker, "HEALTH_FILE", tmp_path / "health.json")
 
@@ -35,7 +35,7 @@ def _isolate_health_file(monkeypatch, tmp_path: Path):
 @pytest.fixture(autouse=True)
 def _notion_api_key(monkeypatch):
     monkeypatch.setenv("NOTION_API_KEY", "secret_test")
-    from notion_finance_sync.config import settings as settings_mod
+    from finance_sync.config import settings as settings_mod
 
     settings_mod.get_notion_api_key.cache_clear()
     yield
@@ -85,7 +85,7 @@ async def _run_main(argv: list[str], monkeypatch, capsys=None) -> int:
     import sys
 
     monkeypatch.setattr(sys, "argv", ["sync"] + argv)
-    from notion_finance_sync.cli.sync_cli import main
+    from finance_sync.cli.sync_cli import main
 
     return await main()
 
@@ -98,7 +98,7 @@ async def _run_main(argv: list[str], monkeypatch, capsys=None) -> int:
 class TestBankFlag:
     @pytest.mark.asyncio
     async def test_calls_run_one_bank_with_session_id(self, monkeypatch):
-        from notion_finance_sync.cli import sync_cli
+        from finance_sync.cli import sync_cli
 
         mock = AsyncMock(return_value=_success_result("bofa"))
         monkeypatch.setattr(sync_cli, "run_one_bank", mock)
@@ -111,7 +111,7 @@ class TestBankFlag:
 
     @pytest.mark.asyncio
     async def test_exits_0_on_success(self, monkeypatch):
-        from notion_finance_sync.cli import sync_cli
+        from finance_sync.cli import sync_cli
 
         monkeypatch.setattr(
             sync_cli, "run_one_bank", AsyncMock(return_value=_success_result("bofa"))
@@ -122,7 +122,7 @@ class TestBankFlag:
 
     @pytest.mark.asyncio
     async def test_exits_1_on_failure(self, monkeypatch):
-        from notion_finance_sync.cli import sync_cli
+        from finance_sync.cli import sync_cli
 
         monkeypatch.setattr(
             sync_cli, "run_one_bank", AsyncMock(return_value=_failure_result("bofa"))
@@ -133,7 +133,7 @@ class TestBankFlag:
 
     @pytest.mark.asyncio
     async def test_since_is_forwarded(self, monkeypatch):
-        from notion_finance_sync.cli import sync_cli
+        from finance_sync.cli import sync_cli
 
         mock = AsyncMock(return_value=_success_result("bofa"))
         monkeypatch.setattr(sync_cli, "run_one_bank", mock)
@@ -145,7 +145,7 @@ class TestBankFlag:
 
     @pytest.mark.asyncio
     async def test_skipped_counts_as_success(self, monkeypatch):
-        from notion_finance_sync.cli import sync_cli
+        from finance_sync.cli import sync_cli
 
         monkeypatch.setattr(sync_cli, "run_one_bank", AsyncMock(return_value=_skipped_result("td")))
 
@@ -161,7 +161,7 @@ class TestBankFlag:
 class TestAllBanks:
     @pytest.mark.asyncio
     async def test_calls_run_all_banks(self, monkeypatch):
-        from notion_finance_sync.cli import sync_cli
+        from finance_sync.cli import sync_cli
 
         mock = AsyncMock(return_value={"bofa": _success_result("bofa")})
         monkeypatch.setattr(sync_cli, "run_all_banks", mock)
@@ -172,7 +172,7 @@ class TestAllBanks:
 
     @pytest.mark.asyncio
     async def test_exits_0_all_success(self, monkeypatch):
-        from notion_finance_sync.cli import sync_cli
+        from finance_sync.cli import sync_cli
 
         results = {
             "bofa": _success_result("bofa"),
@@ -185,7 +185,7 @@ class TestAllBanks:
 
     @pytest.mark.asyncio
     async def test_exits_1_any_failure(self, monkeypatch):
-        from notion_finance_sync.cli import sync_cli
+        from finance_sync.cli import sync_cli
 
         results = {
             "bofa": _success_result("bofa"),
@@ -198,7 +198,7 @@ class TestAllBanks:
 
     @pytest.mark.asyncio
     async def test_exits_0_when_some_skipped(self, monkeypatch):
-        from notion_finance_sync.cli import sync_cli
+        from finance_sync.cli import sync_cli
 
         results = {
             "bofa": _success_result("bofa"),
@@ -211,7 +211,7 @@ class TestAllBanks:
 
     @pytest.mark.asyncio
     async def test_skip_enrichers_forwarded(self, monkeypatch):
-        from notion_finance_sync.cli import sync_cli
+        from finance_sync.cli import sync_cli
 
         mock = AsyncMock(return_value={"bofa": _success_result("bofa")})
         monkeypatch.setattr(sync_cli, "run_all_banks", mock)
@@ -230,7 +230,7 @@ class TestAllBanks:
 class TestSummaryOutput:
     @pytest.mark.asyncio
     async def test_summary_success_line_format(self, monkeypatch, capsys):
-        from notion_finance_sync.cli import sync_cli
+        from finance_sync.cli import sync_cli
 
         results = {
             "bofa": _success_result(
@@ -249,7 +249,7 @@ class TestSummaryOutput:
 
     @pytest.mark.asyncio
     async def test_summary_failure_line_format(self, monkeypatch, capsys):
-        from notion_finance_sync.cli import sync_cli
+        from finance_sync.cli import sync_cli
 
         results = {
             "fidelity": _failure_result("fidelity"),
@@ -265,7 +265,7 @@ class TestSummaryOutput:
 
     @pytest.mark.asyncio
     async def test_summary_has_duration(self, monkeypatch, capsys):
-        from notion_finance_sync.cli import sync_cli
+        from finance_sync.cli import sync_cli
 
         results = {
             "bofa": _success_result("bofa", duration=1.42),
@@ -280,7 +280,7 @@ class TestSummaryOutput:
 
     @pytest.mark.asyncio
     async def test_single_bank_also_prints_summary(self, monkeypatch, capsys):
-        from notion_finance_sync.cli import sync_cli
+        from finance_sync.cli import sync_cli
 
         monkeypatch.setattr(
             sync_cli,
@@ -304,7 +304,7 @@ class TestInteractiveFlag:
     @pytest.mark.asyncio
     async def test_interactive_logs_warning_does_not_crash(self, monkeypatch, capsys):
         """--interactive is not yet implemented; should log a warning and continue."""
-        from notion_finance_sync.cli import sync_cli
+        from finance_sync.cli import sync_cli
 
         monkeypatch.setattr(
             sync_cli,

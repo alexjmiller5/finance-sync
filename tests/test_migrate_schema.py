@@ -18,7 +18,7 @@ import json
 import httpx
 import pytest
 
-from notion_finance_sync.notion.migrations import (
+from finance_sync.notion.migrations import (
     CATEGORY_OPTIONS,
     NET_AMOUNT_FORMULA,
     NEW_ACCOUNT_TYPE_OPTIONS,

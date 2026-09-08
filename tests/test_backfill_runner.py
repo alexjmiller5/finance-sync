@@ -6,9 +6,9 @@ from datetime import date
 
 import pytest
 
-import notion_finance_sync.backfill.runner as runner_mod
-from notion_finance_sync.backfill.runner import run_backfill
-from notion_finance_sync.models import (
+import finance_sync.backfill.runner as runner_mod
+from finance_sync.backfill.runner import run_backfill
+from finance_sync.models import (
     AccountType,
     BankName,
     TransactionRecord,

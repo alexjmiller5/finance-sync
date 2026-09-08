@@ -1,5 +1,5 @@
 {
-  description = "notion-finance-sync — direct-bank-scraper daily sync to Notion, packaged with uv2nix and deployable on a nix-darwin Mac Mini";
+  description = "finance-sync — direct-bank-scraper daily sync to Notion, packaged with uv2nix and deployable on a nix-darwin Mac Mini";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
@@ -49,25 +49,25 @@
     in
     {
       # The app as a self-contained venv in the store; the runnable command is
-      # `${packages.default}/bin/notion-finance-sync`. No checkout, no uv sync.
+      # `${packages.default}/bin/finance-sync`. No checkout, no uv sync.
       packages = forAllSystems (pkgs:
         let
           pythonSet = mkPythonSet pkgs;
         in
         {
-          default = pythonSet.mkVirtualEnv "notion-finance-sync-env" workspace.deps.default;
+          default = pythonSet.mkVirtualEnv "finance-sync-env" workspace.deps.default;
         });
 
       # nix-darwin module for the Mac Mini deploy (Chrome cask + op + launchd agent).
       darwinModules.default = import ./nix/darwin.nix self;
-      darwinModules.notion-finance-sync = self.darwinModules.default;
+      darwinModules.finance-sync = self.darwinModules.default;
 
       devShells = forAllSystems (pkgs: {
         default = pkgs.mkShell {
           packages = [ pkgs.uv pkgs.ruff pkgs.just pkgs.python312 ];
           shellHook = ''
             export PYTHONPATH="$PWD/src"
-            echo "notion-finance-sync dev shell — 'just' to list tasks, 'uv sync' to install."
+            echo "finance-sync dev shell — 'just' to list tasks, 'uv sync' to install."
           '';
         };
       });

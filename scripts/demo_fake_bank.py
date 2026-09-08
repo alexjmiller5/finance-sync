@@ -24,20 +24,20 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "tests"))
 
 from fakes import FakeBankScraper
 
-from notion_finance_sync.banks import registry as banks_registry
-from notion_finance_sync.config.settings import (
+from finance_sync.banks import registry as banks_registry
+from finance_sync.config.settings import (
     NOTION_TRANSACTIONS_DATA_SOURCE_ID,
     get_notion_api_key,
 )
-from notion_finance_sync.models import (
+from finance_sync.models import (
     AccountType,
     BankName,
     CanonicalCategory,
     TransactionRecord,
     TransactionStatus,
 )
-from notion_finance_sync.notion.client import NotionClient
-from notion_finance_sync.sync.orchestrator import run_one_bank
+from finance_sync.notion.client import NotionClient
+from finance_sync.sync.orchestrator import run_one_bank
 
 DEMO_PREFIX = "demo-fake-"
 
@@ -125,7 +125,7 @@ async def archive_pages(client: NotionClient, pages: list[dict]) -> None:
 
 async def main() -> int:
     print("=" * 70)
-    print("  notion-finance-sync — End-to-End Demo (FakeBank)")
+    print("  finance-sync — End-to-End Demo (FakeBank)")
     print("=" * 70)
 
     fake_records = make_demo_records()

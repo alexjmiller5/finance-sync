@@ -16,8 +16,8 @@ import json
 import httpx
 import pytest
 
-from notion_finance_sync.config.settings import NOTION_TASKS_DATA_SOURCE_ID
-from notion_finance_sync.health.notion_task import (
+from finance_sync.config.settings import NOTION_TASKS_DATA_SOURCE_ID
+from finance_sync.health.notion_task import (
     TasksClient,
     _build_properties,
     create_failure_task,

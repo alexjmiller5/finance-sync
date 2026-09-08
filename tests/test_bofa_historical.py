@@ -6,8 +6,8 @@ import re
 from datetime import date
 from pathlib import Path
 
-from notion_finance_sync.banks.bofa import assemble, fetchers
-from notion_finance_sync.models import (
+from finance_sync.banks.bofa import assemble, fetchers
+from finance_sync.models import (
     AccountType,
     BankName,
     TransactionRecord,

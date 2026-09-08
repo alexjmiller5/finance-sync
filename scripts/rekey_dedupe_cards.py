@@ -19,9 +19,9 @@ import asyncio
 from collections import defaultdict
 from datetime import date
 
-from notion_finance_sync.backfill.runner import _make_client
-from notion_finance_sync.banks import registry as bank_registry
-from notion_finance_sync.models import AccountType
+from finance_sync.backfill.runner import _make_client
+from finance_sync.banks import registry as bank_registry
+from finance_sync.models import AccountType
 
 
 def _key(card: str, txn_date, amount) -> tuple[str, str, float] | None:

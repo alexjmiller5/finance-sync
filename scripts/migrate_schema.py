@@ -50,12 +50,12 @@ import sys
 import httpx
 import structlog
 
-from notion_finance_sync.config.settings import (
+from finance_sync.config.settings import (
     NOTION_API_VERSION,
     NOTION_TRANSACTIONS_DATA_SOURCE_ID,
     get_notion_api_key,
 )
-from notion_finance_sync.notion.migrations import (
+from finance_sync.notion.migrations import (
     _NOTION_BASE,
     MigrationPlan,
     apply_migration_plan,

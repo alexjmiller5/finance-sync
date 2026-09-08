@@ -12,8 +12,8 @@ from pathlib import Path
 
 import pytest
 
-from notion_finance_sync.banks.everbank import parser
-from notion_finance_sync.models import (
+from finance_sync.banks.everbank import parser
+from finance_sync.models import (
     AccountType,
     BankName,
     CanonicalCategory,

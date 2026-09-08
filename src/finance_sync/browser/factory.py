@@ -1,0 +1,57 @@
+"""SeleniumBase factory.
+
+Centralizes the UC + CDP mode setup so every bank scraper opens its browser
+the same way. Headed, real Chrome, persistent profile per session.
+
+Usage:
+    from finance_sync.browser.factory import open_session
+
+    with open_session("bofa") as sb:
+        sb.activate_cdp_mode("https://www.bankofamerica.com/")
+        ...
+"""
+
+from __future__ import annotations
+
+from contextlib import contextmanager
+
+import structlog
+from seleniumbase import SB
+
+from finance_sync.config.paths import DRIVERS_DIR, SESSIONS_DIR
+
+logger = structlog.get_logger()
+
+
+@contextmanager
+def open_session(session_id: str, *, headless: bool = False):
+    """Open (or create) a SeleniumBase UC+CDP browser bound to a per-session
+    Chrome user-data directory.
+
+    Args:
+        session_id: short identifier for the bank login (e.g. 'bofa').
+        headless: should always be False for real bank scraping. UC mode is
+            detectable in headless and adds zero benefit on a Mac Mini.
+    """
+    user_data_dir = SESSIONS_DIR / session_id
+    user_data_dir.mkdir(parents=True, exist_ok=True)
+
+    # SeleniumBase downloads chromedriver/uc_driver into its own package dir by
+    # default — read-only in the /nix/store. Redirect it to a writable dir (honored
+    # for both the download and driver resolution).
+    DRIVERS_DIR.mkdir(parents=True, exist_ok=True)
+    from seleniumbase.core.browser_launcher import override_driver_dir
+
+    override_driver_dir(str(DRIVERS_DIR))
+
+    logger.info("opening_session", session_id=session_id, profile=str(user_data_dir))
+
+    with SB(
+        uc=True,
+        headless=headless,
+        locale="en-US",
+        user_data_dir=str(user_data_dir),
+        # `channel="chrome"` uses real Chrome instead of bundled Chromium.
+        # See SPEC §6 for the rationale.
+    ) as sb:
+        yield sb

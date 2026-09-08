@@ -14,8 +14,8 @@ from pathlib import Path
 
 import pytest
 
-from notion_finance_sync.banks import bilt
-from notion_finance_sync.models import (
+from finance_sync.banks import bilt
+from finance_sync.models import (
     AccountType,
     BankName,
     CanonicalCategory,

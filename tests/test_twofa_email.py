@@ -7,7 +7,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-import notion_finance_sync.twofa.email as email_mod
+import finance_sync.twofa.email as email_mod
 
 
 def _fail_if_called(*_a, **_k):

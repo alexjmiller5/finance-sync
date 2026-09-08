@@ -1,6 +1,6 @@
 # Bank Scraper Agent Brief
 
-You are building the **live scraper for ONE bank** in `notion-finance-sync`, a personal-finance
+You are building the **live scraper for ONE bank** in `finance-sync`, a personal-finance
 system that logs directly into banks (no aggregators), scrapes transactions richer than Plaid,
 and writes them to a Notion Transactions database. The **Bank of America scraper is already
 built, live-validated, and backfilled 900 real transactions into Notion** — it is your reference
@@ -20,20 +20,20 @@ Everything below is generic; the per-bank specifics are in §9.
 
 - `docs/SPEC.md` — the whole spec. Especially §4 (bank inventory), §5 (data models), §10 (canonical
   categories), §16 (investment accounts), §17 (auto-Transfer rules), §9 (orphan/pending).
-- `src/notion_finance_sync/banks/bofa/` — **THE reference.** Read every file:
+- `src/finance_sync/banks/bofa/` — **THE reference.** Read every file:
   - `session.py` — SeleniumBase UC+CDP login → 2FA → cookies (the hardened pattern).
   - `fetchers.py` — authenticated `httpx` calls to the discovered endpoints.
   - `card.py` / `deposit.py` — pure parsers (HTML statement + JSON activity).
   - `assemble.py` — enrich + dedupe records.
   - `scraper.py` — `BofAScraper` implementing `fetch_recent` / `fetch_historical`.
   - `categories.py`, `rewards.py` — category code→label map, rewards parsing.
-- `src/notion_finance_sync/banks/_base.py` — the `BankScraper` Protocol you implement.
-- `src/notion_finance_sync/models/transactions.py` — `TransactionRecord` + all enums
+- `src/finance_sync/banks/_base.py` — the `BankScraper` Protocol you implement.
+- `src/finance_sync/models/transactions.py` — `TransactionRecord` + all enums
   (`BankName`, `AccountType`, `CanonicalCategory`, `TransactionStatus`, `CardNetwork`).
 - `tests/test_bofa_*.py` — the TDD pattern + how fixtures are loaded.
 - `data/snapshots/bofa/recon_20260701_235336/FINDINGS.md` — how BofA's endpoints were reverse-
   engineered; write your own equivalent for your bank.
-- Your stub: `src/notion_finance_sync/banks/{BANK}.py` — already scaffolded with `SESSION_ID`,
+- Your stub: `src/finance_sync/banks/{BANK}.py` — already scaffolded with `SESSION_ID`,
   `BANK_DISPLAY_NAME`, `SUPPORTS_LIVE=True`, a starter `CATEGORY_MAP`, and `NotImplementedError`
   method bodies. You fill it in. It is already imported + registered in `banks/registry.py`.
 
@@ -77,7 +77,7 @@ can trigger a re-auth bounce** (BofA lesson) — prefer `fetch()` from the logge
 The **1Password service-account token is already in the macOS Keychain.** Load it into the env:
 
 ```bash
-export OP_SERVICE_ACCOUNT_TOKEN="$(security find-generic-password -a "$(id -un)" -s notion-finance-sync-op-token -w)"
+export OP_SERVICE_ACCOUNT_TOKEN="$(security find-generic-password -a "$(id -un)" -s finance-sync-op-token -w)"
 export PYTHONPATH=src   # editable-install quirk; needed for `uv run python ...`
 ```
 
@@ -85,7 +85,7 @@ Credentials live in the 1Password vault **`Notion Finance Sync`**. Read them via
 getters (already wired — do NOT hardcode):
 
 ```python
-from notion_finance_sync.config.settings import get_bank_username, get_bank_password
+from finance_sync.config.settings import get_bank_username, get_bank_password
 u = get_bank_username("{BANK}")   # -> op://<vault>/<item>/username
 p = get_bank_password("{BANK}")   # -> op://<vault>/<item>/password
 ```
@@ -207,7 +207,7 @@ git worktree add ../nfs-{BANK} -b feat/{BANK}-scraper feat/bofa-end-to-end
 cd ../nfs-{BANK}
 ```
 
-- Work only in **your** files: `src/notion_finance_sync/banks/{BANK}.py`, your fetchers/parsers if you
+- Work only in **your** files: `src/finance_sync/banks/{BANK}.py`, your fetchers/parsers if you
   split them into a `banks/{BANK}/` package, `tests/test_{BANK}_*.py`, `data/snapshots/{BANK}/`.
 - **Shared files that will conflict at merge — keep edits minimal + obvious:**
   - `banks/registry.py` — your bank is already imported + registered (stub exists); no edit needed

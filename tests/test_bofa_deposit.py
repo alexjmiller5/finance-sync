@@ -8,8 +8,8 @@ from pathlib import Path
 
 import pytest
 
-from notion_finance_sync.banks.bofa import deposit
-from notion_finance_sync.models import (
+from finance_sync.banks.bofa import deposit
+from finance_sync.models import (
     AccountType,
     BankName,
     CanonicalCategory,
@@ -87,7 +87,7 @@ def test_account_name_override(raw):
 
 
 def test_clean_description_trims_truncation_tail():
-    from notion_finance_sync.banks.bofa.deposit import _clean_description
+    from finance_sync.banks.bofa.deposit import _clean_description
 
     truncated = ' Zelle Recurring payment to Alexander Miller - EverBank for "regularly...'
     assert (

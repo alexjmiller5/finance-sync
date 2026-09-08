@@ -30,8 +30,8 @@ from random import randint
 
 import httpx
 
-from notion_finance_sync.config.settings import get_bank_password, get_bank_username
-from notion_finance_sync.twofa.sms import _query_recent_messages, get_sms_code
+from finance_sync.config.settings import get_bank_password, get_bank_username
+from finance_sync.twofa.sms import _query_recent_messages, get_sms_code
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "data" / "snapshots" / "venmo" / f"api_recon_{datetime.now(tz=UTC):%Y%m%d_%H%M%S}"

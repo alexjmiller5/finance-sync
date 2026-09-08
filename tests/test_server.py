@@ -18,7 +18,7 @@ from unittest.mock import AsyncMock
 import pytest
 from fastapi.testclient import TestClient
 
-from notion_finance_sync.server.app import app
+from finance_sync.server.app import app
 from tests.fakes import FakeBankScraper
 
 # ---------------------------------------------------------------------------
@@ -29,7 +29,7 @@ from tests.fakes import FakeBankScraper
 @pytest.fixture(autouse=True)
 def _isolate_health_file(monkeypatch, tmp_path: Path):
     """Redirect data/health.json to a per-test tmp file."""
-    from notion_finance_sync.health import tracker
+    from finance_sync.health import tracker
 
     monkeypatch.setattr(tracker, "HEALTH_FILE", tmp_path / "health.json")
 
@@ -39,7 +39,7 @@ def fake_registry(monkeypatch):
     """Monkeypatch the bank registry with a single FakeBank so tests don't
     need real scraper credentials or network access.
     """
-    from notion_finance_sync.banks import registry
+    from finance_sync.banks import registry
 
     fake = FakeBankScraper(records=[])
     fake_reg = {"fake_bank": fake}
@@ -54,8 +54,8 @@ def _stub_orchestrator(monkeypatch):
     credentials). Individual tests that want to assert on the mock can override
     this by patching again after this autouse fixture runs.
     """
-    from notion_finance_sync.server import app as app_module
-    from notion_finance_sync.sync.orchestrator import SyncResult
+    from finance_sync.server import app as app_module
+    from finance_sync.sync.orchestrator import SyncResult
 
     default_result = SyncResult(session_id="fake_bank", status="success")
 
@@ -124,7 +124,7 @@ class TestSyncAll:
         assert "fake_bank" in body["banks"]
 
     def test_banks_matches_registry(self, client, fake_registry):
-        from notion_finance_sync.banks.registry import all_session_ids
+        from finance_sync.banks.registry import all_session_ids
 
         response = client.post("/sync")
         assert response.json()["banks"] == all_session_ids()
@@ -135,7 +135,7 @@ class TestSyncAll:
         The autouse _stub_orchestrator fixture already patches app_module.run_all_banks
         with an AsyncMock. We just need to post and verify the stub was awaited.
         """
-        from notion_finance_sync.server import app as app_module
+        from finance_sync.server import app as app_module
 
         client.post("/sync")
 
@@ -148,7 +148,7 @@ class TestSyncAll:
         BackgroundTasks failures must not propagate to the HTTP response; the
         try/except in _run absorbs the exception and logs it instead.
         """
-        from notion_finance_sync.server import app as app_module
+        from finance_sync.server import app as app_module
 
         app_module.run_all_banks.side_effect = RuntimeError("simulated crash")
 
@@ -190,7 +190,7 @@ class TestSyncOne:
         The autouse _stub_orchestrator fixture already patches app_module.run_one_bank
         with an AsyncMock. We just need to post and verify it was awaited with the right arg.
         """
-        from notion_finance_sync.server import app as app_module
+        from finance_sync.server import app as app_module
 
         client.post("/sync/fake_bank")
 
@@ -210,7 +210,7 @@ class TestSyncOne:
         BackgroundTasks failures must not propagate to the HTTP response; the
         try/except in _run absorbs the exception and logs it instead.
         """
-        from notion_finance_sync.server import app as app_module
+        from finance_sync.server import app as app_module
 
         app_module.run_one_bank.side_effect = RuntimeError("simulated crash")
 

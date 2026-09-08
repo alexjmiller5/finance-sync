@@ -19,18 +19,18 @@ from pathlib import Path
 import httpx
 import pytest
 
-from notion_finance_sync.config.settings import (
+from finance_sync.config.settings import (
     NOTION_TASKS_DATA_SOURCE_ID,
     NOTION_TRANSACTIONS_DATA_SOURCE_ID,
 )
-from notion_finance_sync.models import (
+from finance_sync.models import (
     AccountType,
     BankName,
     CardNetwork,
     TransactionRecord,
     TransactionStatus,
 )
-from notion_finance_sync.notion.properties import P
+from finance_sync.notion.properties import P
 from tests.fakes import FakeBankScraper, FakeEnricher
 
 TEST_API_KEY = "secret_test"
@@ -48,7 +48,7 @@ TASKS_QUERY_URL = f"https://api.notion.com/v1/data_sources/{NOTION_TASKS_DATA_SO
 @pytest.fixture(autouse=True)
 def _isolate_health_file(monkeypatch, tmp_path: Path):
     """Redirect data/health.json to a per-test tmp file so tests don't share state."""
-    from notion_finance_sync.health import tracker
+    from finance_sync.health import tracker
 
     monkeypatch.setattr(tracker, "HEALTH_FILE", tmp_path / "health.json")
 
@@ -57,7 +57,7 @@ def _isolate_health_file(monkeypatch, tmp_path: Path):
 def _notion_api_key(monkeypatch):
     monkeypatch.setenv("NOTION_API_KEY", TEST_API_KEY)
     # The settings module caches the API key — clear it so the env var wins.
-    from notion_finance_sync.config import settings as settings_mod
+    from finance_sync.config import settings as settings_mod
 
     settings_mod.get_notion_api_key.cache_clear()
     yield
@@ -152,8 +152,8 @@ def _existing_row(
 class TestHappyPath:
     @pytest.mark.asyncio
     async def test_creates_all_records_when_no_existing(self, respx_mock, monkeypatch):
-        from notion_finance_sync.banks import registry
-        from notion_finance_sync.sync import orchestrator
+        from finance_sync.banks import registry
+        from finance_sync.sync import orchestrator
 
         records = [
             _make_record(source_id="src-1", name="Starbucks", amount=-5.75),
@@ -187,8 +187,8 @@ class TestHappyPath:
 
     @pytest.mark.asyncio
     async def test_passes_since_to_scraper(self, respx_mock, monkeypatch):
-        from notion_finance_sync.banks import registry
-        from notion_finance_sync.sync import orchestrator
+        from finance_sync.banks import registry
+        from finance_sync.sync import orchestrator
 
         fake = FakeBankScraper(records=[])
         monkeypatch.setattr(registry, "BANK_REGISTRY", {"fake_bank": fake})
@@ -214,8 +214,8 @@ class TestHappyPath:
 class TestWithExisting:
     @pytest.mark.asyncio
     async def test_dedups_unchanged_and_creates_new(self, respx_mock, monkeypatch):
-        from notion_finance_sync.banks import registry
-        from notion_finance_sync.sync import orchestrator
+        from finance_sync.banks import registry
+        from finance_sync.sync import orchestrator
 
         existing_record = _make_record(source_id="src-existing", name="Starbucks", amount=-5.75)
         new_record = _make_record(source_id="src-new", name="Whole Foods", amount=-42.10)
@@ -251,8 +251,8 @@ class TestWithExisting:
 
     @pytest.mark.asyncio
     async def test_updates_when_material_field_differs(self, respx_mock, monkeypatch):
-        from notion_finance_sync.banks import registry
-        from notion_finance_sync.sync import orchestrator
+        from finance_sync.banks import registry
+        from finance_sync.sync import orchestrator
 
         # Scrape returns an updated amount for an existing row
         changed_record = _make_record(source_id="src-existing", name="Starbucks", amount=-9.99)
@@ -297,8 +297,8 @@ class TestWithExisting:
 class TestOrphanRelease:
     @pytest.mark.asyncio
     async def test_releases_pending_row_not_in_scrape(self, respx_mock, monkeypatch):
-        from notion_finance_sync.banks import registry
-        from notion_finance_sync.sync import orchestrator
+        from finance_sync.banks import registry
+        from finance_sync.sync import orchestrator
 
         # The scrape covers the same account (source_account_id 'acct-fake-1')
         # but no longer contains the pending txn — it's an orphan.
@@ -346,8 +346,8 @@ class TestOrphanRelease:
         syncs). Pending rows whose Source Account ID wasn't part of this scrape
         stay untouched.
         """
-        from notion_finance_sync.banks import registry
-        from notion_finance_sync.sync import orchestrator
+        from finance_sync.banks import registry
+        from finance_sync.sync import orchestrator
 
         fake = FakeBankScraper(records=[_make_record(source_id="src-1")])
         monkeypatch.setattr(registry, "BANK_REGISTRY", {"fake_bank": fake})
@@ -401,7 +401,7 @@ class TestRetryAndEscalation:
         import json
         from datetime import date
 
-        from notion_finance_sync.health import tracker
+        from finance_sync.health import tracker
 
         state = {
             "fake_bank": {
@@ -417,9 +417,9 @@ class TestRetryAndEscalation:
 
     @pytest.mark.asyncio
     async def test_three_failures_escalates_and_records_failure(self, respx_mock, monkeypatch):
-        from notion_finance_sync.banks import registry
-        from notion_finance_sync.health import tracker
-        from notion_finance_sync.sync import orchestrator
+        from finance_sync.banks import registry
+        from finance_sync.health import tracker
+        from finance_sync.sync import orchestrator
 
         fake = FakeBankScraper(should_raise=RuntimeError("boom"))
         monkeypatch.setattr(registry, "BANK_REGISTRY", {"fake_bank": fake})
@@ -460,8 +460,8 @@ class TestRetryAndEscalation:
 
     @pytest.mark.asyncio
     async def test_failure_task_body_has_correct_title_prefix(self, respx_mock, monkeypatch):
-        from notion_finance_sync.banks import registry
-        from notion_finance_sync.sync import orchestrator
+        from finance_sync.banks import registry
+        from finance_sync.sync import orchestrator
 
         fake = FakeBankScraper(should_raise=RuntimeError("boom"))
         monkeypatch.setattr(registry, "BANK_REGISTRY", {"fake_bank": fake})
@@ -489,8 +489,8 @@ class TestRetryAndEscalation:
     @pytest.mark.asyncio
     async def test_no_escalation_on_first_failure_of_the_day(self, respx_mock, monkeypatch):
         """A single failed run is not enough to trip the threshold."""
-        from notion_finance_sync.banks import registry
-        from notion_finance_sync.sync import orchestrator
+        from finance_sync.banks import registry
+        from finance_sync.sync import orchestrator
 
         fake = FakeBankScraper(should_raise=RuntimeError("boom"))
         monkeypatch.setattr(registry, "BANK_REGISTRY", {"fake_bank": fake})
@@ -516,8 +516,8 @@ class TestRetryAndEscalation:
     @pytest.mark.asyncio
     async def test_recovery_on_third_attempt(self, respx_mock, monkeypatch):
         """Scraper raises twice then succeeds — sync returns success without escalation."""
-        from notion_finance_sync.banks import registry
-        from notion_finance_sync.sync import orchestrator
+        from finance_sync.banks import registry
+        from finance_sync.sync import orchestrator
 
         records = [_make_record(source_id="src-recovered", name="OK", amount=-1.0)]
 
@@ -556,8 +556,8 @@ class TestRetryAndEscalation:
     @pytest.mark.asyncio
     async def test_escalation_failure_does_not_mask_original_error(self, respx_mock, monkeypatch):
         """If Notion task creation itself fails, we still return the original sync error."""
-        from notion_finance_sync.banks import registry
-        from notion_finance_sync.sync import orchestrator
+        from finance_sync.banks import registry
+        from finance_sync.sync import orchestrator
 
         fake = FakeBankScraper(should_raise=RuntimeError("scrape boom"))
         monkeypatch.setattr(registry, "BANK_REGISTRY", {"fake_bank": fake})
@@ -590,8 +590,8 @@ class TestRetryAndEscalation:
 class TestSupportsLiveFalse:
     @pytest.mark.asyncio
     async def test_closed_account_returns_skipped(self, respx_mock, monkeypatch):
-        from notion_finance_sync.banks import registry, td
-        from notion_finance_sync.sync import orchestrator
+        from finance_sync.banks import registry, td
+        from finance_sync.sync import orchestrator
 
         monkeypatch.setattr(registry, "BANK_REGISTRY", {"td": td.TDBankScraper()})
 
@@ -615,8 +615,8 @@ class TestSupportsLiveFalse:
 class TestRunAllBanks:
     @pytest.mark.asyncio
     async def test_runs_each_registered_bank(self, respx_mock, monkeypatch):
-        from notion_finance_sync.banks import registry
-        from notion_finance_sync.sync import orchestrator
+        from finance_sync.banks import registry
+        from finance_sync.sync import orchestrator
 
         class BankA(FakeBankScraper):
             SESSION_ID = "fake_a"
@@ -655,9 +655,9 @@ class TestEnricherNonFatal:
     async def test_notimplementederror_in_enricher_does_not_crash_sync(
         self, respx_mock, monkeypatch
     ):
-        from notion_finance_sync.banks import registry as bank_registry
-        from notion_finance_sync.enrichers import registry as enricher_registry
-        from notion_finance_sync.sync import orchestrator
+        from finance_sync.banks import registry as bank_registry
+        from finance_sync.enrichers import registry as enricher_registry
+        from finance_sync.sync import orchestrator
 
         fake = FakeBankScraper(records=[_make_record(source_id="src-1", name="OK", amount=-1.0)])
         monkeypatch.setattr(bank_registry, "BANK_REGISTRY", {"fake_bank": fake})
@@ -682,9 +682,9 @@ class TestEnricherNonFatal:
 
     @pytest.mark.asyncio
     async def test_skip_enrichers_flag_skips_enrichers(self, respx_mock, monkeypatch):
-        from notion_finance_sync.banks import registry as bank_registry
-        from notion_finance_sync.enrichers import registry as enricher_registry
-        from notion_finance_sync.sync import orchestrator
+        from finance_sync.banks import registry as bank_registry
+        from finance_sync.enrichers import registry as enricher_registry
+        from finance_sync.sync import orchestrator
 
         fake = FakeBankScraper(records=[_make_record(source_id="src-1", name="OK", amount=-1.0)])
         monkeypatch.setattr(bank_registry, "BANK_REGISTRY", {"fake_bank": fake})
@@ -715,7 +715,7 @@ class TestEnricherNonFatal:
 
 class TestRegistryHelpers:
     def test_all_session_ids_includes_known_banks(self):
-        from notion_finance_sync.banks.registry import all_session_ids
+        from finance_sync.banks.registry import all_session_ids
 
         ids = all_session_ids()
         # Spot-check a few; the registry's contents are documented in the module
@@ -723,14 +723,14 @@ class TestRegistryHelpers:
             assert required in ids
 
     def test_get_scraper_returns_instance(self):
-        from notion_finance_sync.banks.registry import get_scraper
+        from finance_sync.banks.registry import get_scraper
 
         scraper = get_scraper("bofa")
         assert scraper is not None
         assert scraper.SESSION_ID == "bofa"
 
     def test_get_scraper_unknown_raises(self):
-        from notion_finance_sync.banks.registry import get_scraper
+        from finance_sync.banks.registry import get_scraper
 
         with pytest.raises(KeyError):
             get_scraper("nonexistent_bank")
@@ -744,9 +744,9 @@ class TestOrphanReleaseBankScoped:
         Regression: the first live bilt sync (2026-07-03) released a U.S. Bank
         and a BofA pending row because orphan detection wasn't bank-scoped.
         """
-        from notion_finance_sync.banks import registry
-        from notion_finance_sync.models import BankName
-        from notion_finance_sync.sync import orchestrator
+        from finance_sync.banks import registry
+        from finance_sync.models import BankName
+        from finance_sync.sync import orchestrator
 
         fake = FakeBankScraper(records=[])
         fake.BANKS = {BankName.BILT}

@@ -40,7 +40,7 @@ def parse_args() -> argparse.Namespace:
 
 
 async def main() -> int:
-    from notion_finance_sync.backfill.runner import run_backfill
+    from finance_sync.backfill.runner import run_backfill
 
     args = parse_args()
     if args.since is None:

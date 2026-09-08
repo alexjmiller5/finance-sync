@@ -4,14 +4,14 @@ from __future__ import annotations
 
 from datetime import date
 
-from notion_finance_sync.models import (
+from finance_sync.models import (
     AccountType,
     BankName,
     CardNetwork,
     TransactionRecord,
     TransactionStatus,
 )
-from notion_finance_sync.sync.orphan import OrphanRelease, detect_orphans, filter_pending
+from finance_sync.sync.orphan import OrphanRelease, detect_orphans, filter_pending
 
 
 def _record(
@@ -142,7 +142,7 @@ class TestFilterPendingBankScope:
     }
 
     def test_scopes_to_given_banks(self):
-        from notion_finance_sync.models import BankName
+        from finance_sync.models import BankName
 
         result = filter_pending(self.ROWS, banks={BankName.BILT})
         assert set(result.keys()) == {"src-bilt"}

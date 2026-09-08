@@ -4,7 +4,7 @@ how the personal email leaked into nix-config."""
 
 import pytest
 
-from notion_finance_sync.config import settings
+from finance_sync.config import settings
 
 
 @pytest.fixture(autouse=True)

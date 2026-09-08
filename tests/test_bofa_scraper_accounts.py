@@ -7,8 +7,8 @@ The option set below is copied from the live Transactions data source (2026-07-0
 
 from __future__ import annotations
 
-from notion_finance_sync.banks.bofa import scraper
-from notion_finance_sync.models import RewardsType
+from finance_sync.banks.bofa import scraper
+from finance_sync.models import RewardsType
 
 # Live Notion "Credit Card / Account" select options.
 NOTION_CREDIT_CARD_ACCOUNT_OPTIONS = {

@@ -1,4 +1,4 @@
-# notion-finance-sync — Specification
+# finance-sync — Specification
 
 **Status:** Design complete, scaffolding in progress
 **Last updated:** 2026-05-20
@@ -63,7 +63,7 @@ A personal Python service running on Alex's Mac Mini that:
 ### Repository layout
 
 ```
-notion-finance-sync/
+finance-sync/
 ├── docs/
 │   └── SPEC.md                          ← this file
 ├── pyproject.toml                       ← uv, py3.12+, pinned deps
@@ -71,7 +71,7 @@ notion-finance-sync/
 ├── README.md                            ← setup + manual steps
 ├── .gitignore
 ├── .python-version
-├── src/notion_finance_sync/
+├── src/finance_sync/
 │   ├── config/
 │   │   └── settings.py                  ← pydantic-settings + 1Password
 │   ├── models/
@@ -131,7 +131,7 @@ notion-finance-sync/
 ├── config/
 │   └── cards.yaml                       ← gitignored, per-card reward rules
 └── deploy/
-    └── com.alexmiller.notion-finance-sync.plist  ← launchd daily timer
+    └── com.alexmiller.finance-sync.plist  ← launchd daily timer
 ```
 
 ---
@@ -625,7 +625,7 @@ When Alex pays for a group dinner on his card and friends Venmo him back, he **m
 
 ### Code location
 
-`src/notion_finance_sync/backfill/` (runner, dedup, pdf_parsers). CLI: `scripts/backfill.py`. Shares `BankScraper` Protocol, Notion client, `TransactionRecord` with daily sync.
+`src/finance_sync/backfill/` (runner, dedup, pdf_parsers). CLI: `scripts/backfill.py`. Shares `BankScraper` Protocol, Notion client, `TransactionRecord` with daily sync.
 
 ### Dedup at the API/PDF seam
 
@@ -660,7 +660,7 @@ Documented in README:
 
 1. **Install dependencies:** `uv sync`
 2. **1Password CLI configured** (`op` command works, signed in to relevant vault)
-3. **Project-scoped 1Password vault** named `Notion Finance Sync` (created via `op vault create`). Service account `notion-finance-sync-svc` has read+write scoped only to this vault. Service-account token lives in Personal vault at `op://Personal/Notion Finance Sync Service Account Token/password`.
+3. **Project-scoped 1Password vault** named `Notion Finance Sync` (created via `op vault create`). Service account `finance-sync-svc` has read+write scoped only to this vault. Service-account token lives in Personal vault at `op://Personal/Notion Finance Sync Service Account Token/password`.
 4. **Per-bank 1Password items** in the project vault. The session_id-to-item mapping lives in `settings.OP_BANK_ITEM_BY_SESSION`. Required items:
    - `op://<vault>/BofA/{username,password}` (covers all BofA accounts incl. investment + IRA — one login)
    - `op://<vault>/Wells Fargo/{username,password}`

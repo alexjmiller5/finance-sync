@@ -15,8 +15,8 @@ from pathlib import Path
 
 import pytest
 
-from notion_finance_sync.banks import venmo
-from notion_finance_sync.models import (
+from finance_sync.banks import venmo
+from finance_sync.models import (
     AccountType,
     BankName,
     CanonicalCategory,

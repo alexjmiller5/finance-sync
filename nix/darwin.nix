@@ -1,4 +1,4 @@
-# nix-darwin module for the notion-finance-sync daily sync.
+# nix-darwin module for the finance-sync daily sync.
 #
 # Fully packaged deploy: `darwin-rebuild switch` builds the app (uv2nix, from
 # uv.lock), assembles a signed macOS .app bundle around it, generates config.toml
@@ -19,14 +19,14 @@ self:
 { config, lib, pkgs, ... }:
 
 let
-  cfg = config.services.notion-finance-sync;
+  cfg = config.services.finance-sync;
   app = self.packages.${pkgs.stdenv.hostPlatform.system}.default;
   tomlFormat = pkgs.formats.toml { };
-  configFile = tomlFormat.generate "notion-finance-sync-config.toml" cfg.settings;
+  configFile = tomlFormat.generate "finance-sync-config.toml" cfg.settings;
 
   # Wrapper: resolve the OP token (agenix file first, Keychain fallback), point the
   # app at the generated config + writable state dir, then exec it.
-  runner = pkgs.writeShellScript "notion-finance-sync-run" ''
+  runner = pkgs.writeShellScript "finance-sync-run" ''
     set -euo pipefail
     export NFS_CONFIG=${lib.escapeShellArg "${configFile}"}
     export NFS_STATE_DIR=${lib.escapeShellArg cfg.stateDir}
@@ -50,12 +50,12 @@ let
     fi
     export OP_SERVICE_ACCOUNT_TOKEN="$token"
     unset token
-    exec ${app}/bin/notion-finance-sync "$@"
+    exec ${app}/bin/finance-sync "$@"
   '';
 
   # The .app bundle: a tiny signed Mach-O exec that hands off to the runner. Built
   # unsigned in the store; activation copies it to a stable path and codesigns it.
-  appBundle = pkgs.runCommandCC "notion-finance-sync-app" { } ''
+  appBundle = pkgs.runCommandCC "finance-sync-app" { } ''
     mkdir -p "$out/Contents/MacOS"
     cat > "$out/Contents/Info.plist" <<'PLIST'
     <?xml version="1.0" encoding="UTF-8"?>
@@ -63,7 +63,7 @@ let
     <plist version="1.0"><dict>
       <key>CFBundleIdentifier</key><string>${cfg.bundleId}</string>
       <key>CFBundleName</key><string>${cfg.appName}</string>
-      <key>CFBundleExecutable</key><string>notion-finance-sync</string>
+      <key>CFBundleExecutable</key><string>finance-sync</string>
       <key>CFBundlePackageType</key><string>APPL</string>
       <key>LSBackgroundOnly</key><true/>
     </dict></plist>
@@ -77,14 +77,14 @@ let
       return 127;
     }
     EOF
-    $CC -O2 -o "$out/Contents/MacOS/notion-finance-sync" stub.c
+    $CC -O2 -o "$out/Contents/MacOS/finance-sync" stub.c
   '';
 
-  appExe = "${cfg.appInstallPath}/Contents/MacOS/notion-finance-sync";
+  appExe = "${cfg.appInstallPath}/Contents/MacOS/finance-sync";
 in
 {
-  options.services.notion-finance-sync = {
-    enable = lib.mkEnableOption "the notion-finance-sync daily bank -> Notion sync";
+  options.services.finance-sync = {
+    enable = lib.mkEnableOption "the finance-sync daily bank -> Notion sync";
 
     user = lib.mkOption {
       type = lib.types.str;
@@ -94,8 +94,8 @@ in
 
     stateDir = lib.mkOption {
       type = lib.types.str;
-      default = "/Users/${cfg.user}/Library/Application Support/notion-finance-sync";
-      defaultText = lib.literalExpression ''"/Users/''${user}/Library/Application Support/notion-finance-sync"'';
+      default = "/Users/${cfg.user}/Library/Application Support/finance-sync";
+      defaultText = lib.literalExpression ''"/Users/''${user}/Library/Application Support/finance-sync"'';
       description = "Writable dir for Chrome profiles, snapshots, statements, health, tokens, logs.";
     };
 
@@ -156,13 +156,13 @@ in
 
     keychainService = lib.mkOption {
       type = lib.types.str;
-      default = "notion-finance-sync-op-token";
+      default = "finance-sync-op-token";
       description = "Keychain generic-password service holding the OP token (fallback when tokenFile is unset).";
     };
 
     bundleId = lib.mkOption {
       type = lib.types.str;
-      default = "com.alexmiller.notion-finance-sync";
+      default = "com.alexmiller.finance-sync";
       description = "CFBundleIdentifier of the generated .app.";
     };
 
@@ -180,7 +180,7 @@ in
 
     signingIdentity = lib.mkOption {
       type = lib.types.str;
-      default = "notion-finance-sync-signing";
+      default = "finance-sync-signing";
       description = ''
         Common name of the self-signed code-signing cert (in the System keychain, so
         root can sign at activation). Created automatically at activation if absent.
@@ -263,9 +263,9 @@ in
 
     # USER agent: runs in the login session so it can reach the token, Messages DB,
     # and per-bank Chrome profiles. Runs the signed .app exec (which hands to the runner).
-    launchd.user.agents.notion-finance-sync = {
+    launchd.user.agents.finance-sync = {
       serviceConfig = {
-        Label = "com.notion-finance-sync.daily";
+        Label = "com.alexmiller.finance-sync.daily";
         ProgramArguments = [ appExe ];
         # launchd's default CWD is "/" (read-only); seleniumbase writes browser
         # downloads to a CWD-relative "downloaded_files", so run from the state dir.

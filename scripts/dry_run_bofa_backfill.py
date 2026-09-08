@@ -19,8 +19,8 @@ import json
 from collections import Counter
 from pathlib import Path
 
-from notion_finance_sync.banks.bofa import card, deposit, rewards
-from notion_finance_sync.banks.bofa.rewards import match_rewards
+from finance_sync.banks.bofa import card, deposit, rewards
+from finance_sync.banks.bofa.rewards import match_rewards
 
 BACKFILL = Path("data/snapshots/bofa/backfill")
 

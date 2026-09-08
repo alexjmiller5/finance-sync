@@ -14,9 +14,9 @@ from __future__ import annotations
 from datetime import date
 from pathlib import Path
 
-from notion_finance_sync.banks._base import UnsupportedOperation
-from notion_finance_sync.enrichers._base import ExternalRewardEntry, NotionUpdate
-from notion_finance_sync.models import CategoryMap, TransactionRecord
+from finance_sync.banks._base import UnsupportedOperation
+from finance_sync.enrichers._base import ExternalRewardEntry, NotionUpdate
+from finance_sync.models import CategoryMap, TransactionRecord
 
 
 class FakeBankScraper:

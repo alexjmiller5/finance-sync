@@ -12,8 +12,8 @@ from __future__ import annotations
 
 from datetime import date
 
-from notion_finance_sync.models import TransactionRecord, TransactionStatus
-from notion_finance_sync.sync.reconcile import reconcile_pending_to_posted
+from finance_sync.models import TransactionRecord, TransactionStatus
+from finance_sync.sync.reconcile import reconcile_pending_to_posted
 
 
 def _rec(source_id, *, account="acct-1", name="Bar X", amount=-40.0, day=1):

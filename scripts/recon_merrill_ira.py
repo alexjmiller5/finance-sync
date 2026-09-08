@@ -18,13 +18,13 @@ import time
 from datetime import UTC, datetime
 from pathlib import Path
 
-from notion_finance_sync.banks.bofa.session import (
+from finance_sync.banks.bofa.session import (
     BOFA_SMS_REGEX,
     BOFA_SMS_SENDER,
     _resolve_credentials,
 )
-from notion_finance_sync.browser.factory import open_session
-from notion_finance_sync.twofa.sms import get_sms_code
+from finance_sync.browser.factory import open_session
+from finance_sync.twofa.sms import get_sms_code
 
 OUT = Path("data/snapshots/bofa/merrill_ira_recon")
 

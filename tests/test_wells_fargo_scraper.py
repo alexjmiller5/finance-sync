@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from notion_finance_sync.banks.wells_fargo.scraper import WellsFargoScraper
+from finance_sync.banks.wells_fargo.scraper import WellsFargoScraper
 
 WF_PDF_DIR = Path(__file__).resolve().parents[1] / "data" / "statements" / "wf"
 _HAS_PDFS = WF_PDF_DIR.exists() and any(WF_PDF_DIR.glob("*.pdf"))
@@ -15,11 +15,11 @@ _HAS_PDFS = WF_PDF_DIR.exists() and any(WF_PDF_DIR.glob("*.pdf"))
 
 def test_fetch_recent_empty_card_returns_nothing_and_does_not_notify(mocker):
     mocker.patch(
-        "notion_finance_sync.banks.wells_fargo.scraper.session.has_live_activity",
+        "finance_sync.banks.wells_fargo.scraper.session.has_live_activity",
         return_value=False,
     )
     notify = mocker.patch(
-        "notion_finance_sync.banks.wells_fargo.scraper.notify_wells_fargo_activity"
+        "finance_sync.banks.wells_fargo.scraper.notify_wells_fargo_activity"
     )
     assert WellsFargoScraper().fetch_recent(date(2025, 8, 1)) == []
     notify.assert_not_called()
@@ -27,11 +27,11 @@ def test_fetch_recent_empty_card_returns_nothing_and_does_not_notify(mocker):
 
 def test_fetch_recent_notifies_when_activity_appears(mocker):
     mocker.patch(
-        "notion_finance_sync.banks.wells_fargo.scraper.session.has_live_activity",
+        "finance_sync.banks.wells_fargo.scraper.session.has_live_activity",
         return_value=True,
     )
     notify = mocker.patch(
-        "notion_finance_sync.banks.wells_fargo.scraper.notify_wells_fargo_activity"
+        "finance_sync.banks.wells_fargo.scraper.notify_wells_fargo_activity"
     )
     assert WellsFargoScraper().fetch_recent(date(2025, 8, 1)) == []
     notify.assert_called_once()
@@ -39,11 +39,11 @@ def test_fetch_recent_notifies_when_activity_appears(mocker):
 
 def test_notify_failure_does_not_sink_the_sync(mocker):
     mocker.patch(
-        "notion_finance_sync.banks.wells_fargo.scraper.session.has_live_activity",
+        "finance_sync.banks.wells_fargo.scraper.session.has_live_activity",
         return_value=True,
     )
     mocker.patch(
-        "notion_finance_sync.banks.wells_fargo.scraper.notify_wells_fargo_activity",
+        "finance_sync.banks.wells_fargo.scraper.notify_wells_fargo_activity",
         side_effect=RuntimeError("notion down"),
     )
     # must swallow the notification error and still return cleanly

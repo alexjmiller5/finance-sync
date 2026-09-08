@@ -1,4 +1,4 @@
-# notion-finance-sync — non-secret personal configuration.
+# finance-sync — non-secret personal configuration.
 #
 # Copy this to `config.toml` (gitignored) and fill in YOUR values:
 #   cp config.example.toml config.toml

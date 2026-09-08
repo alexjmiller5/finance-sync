@@ -7,8 +7,8 @@ from pathlib import Path
 
 import pytest
 
-from notion_finance_sync.banks.bofa import rewards
-from notion_finance_sync.models import (
+from finance_sync.banks.bofa import rewards
+from finance_sync.models import (
     AccountType,
     BankName,
     TransactionRecord,

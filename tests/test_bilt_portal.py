@@ -15,7 +15,7 @@ from pathlib import Path
 
 import pytest
 
-from notion_finance_sync.enrichers.bilt_portal import BiltPortalEnricher, entries_to_external
+from finance_sync.enrichers.bilt_portal import BiltPortalEnricher, entries_to_external
 
 LOYALTY_FIXTURE = Path(__file__).parent / "fixtures" / "bilt" / "loyalty_activity.json"
 

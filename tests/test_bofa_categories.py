@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import pytest
 
-from notion_finance_sync.banks.bofa import categories as cat
-from notion_finance_sync.models import CanonicalCategory
+from finance_sync.banks.bofa import categories as cat
+from finance_sync.models import CanonicalCategory
 
 
 def test_code_to_label_covers_known_codes():
