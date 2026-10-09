@@ -2,7 +2,7 @@
 
 This repository retains a retired scraper and Notion-writer implementation.
 The active finance-review skill owns ad hoc source collection and interactive
-review; Life Data owns the current financial records and their write contract.
+review; Soma owns the current financial records and their write contract.
 
 Preserve the source and design material as reference. The bundled deployment
 scripts and Nix module are not the active installation path. Documentation

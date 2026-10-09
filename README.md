@@ -3,14 +3,14 @@
 Retired bank-scraper implementation retained for reference. Active account
 collection and transaction review use the
 [finance-review skill](https://github.com/alexjmiller5/agent-config/tree/main/skills/finance-review)
-and Life Data.
+and Soma.
 
 ## Current workflow
 
 Start a finance-review conversation and select the accounts to collect.
 The workflow reads authenticated source records, preserves their evidence,
 reconciles account coverage, then reviews categories, shares and rewards
-with the account owner. Life Data owns the financial records; Networth
+with the account owner. Soma owns the financial records; Networth
 consumes them for display.
 
 Collection is ad hoc. Source access, uncertain classifications and shared
@@ -28,6 +28,6 @@ retired pipeline; do not use them to provision a new installation, restart
 a schedule or migrate a live financial database.
 
 The active skill owns source playbooks and collection/review tooling.
-Life Data owns schema validation, provenance, history and synchronization.
+Soma owns schema validation, provenance, history and synchronization.
 Application configuration and personal financial data stay outside this
 repository.
